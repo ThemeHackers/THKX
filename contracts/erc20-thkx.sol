@@ -104,7 +104,6 @@ contract THKXToken is
             "Timelock not yet expired"
         );
 
-        // ลบการบันทึกหลังจากการ execute
         delete timelockActions[actionHash];
         rewardRate = newRate;
         emit RewardRateUpdated(newRate, block.timestamp);
@@ -174,7 +173,7 @@ contract THKXToken is
 
         bytes32 actionHash = keccak256(abi.encodePacked("rewardRate", newRate));
 
-        // เก็บ timestamp ของการ propose ไว้
+       
         timelockActions[actionHash] = block.timestamp + TIMELOCK_DELAY;
         emit RewardRateUpdateProposed(newRate, timelockActions[actionHash]);
     }
