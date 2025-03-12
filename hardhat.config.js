@@ -15,7 +15,7 @@ module.exports = {
       accounts: [process.env.PRIVATE_KEY]
     },
     holesky: {
-      url: process.env.GOOGLE_HOLESKY_ENDPOINT,
+      url: process.env.ETHEREUM_HOLESKY_GATEWAY_ENDPOINT,
       accounts: [process.env.PRIVATE_KEY]
     },
     mainnet: {
