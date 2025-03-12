@@ -1,4 +1,4 @@
-const faucetAddress = "0xa3E98f570431324f917eBA5E8Ef7cd1A1704A35A"; 
+const faucetAddress = "0xEedD251d65929D4B277205E041d903D60d376641"; 
 const abi = [
     "function claimTokens() public",
     "function cooldownPeriod() public view returns (uint256)",  

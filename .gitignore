@@ -5,12 +5,17 @@ coverage.json
 typechain
 typechain-types
 .vscode
+
 #Hardhat files
 cache
 artifacts
+<<<<<<< HEAD
 <<<<<<< HEAD
 bin/contracts
 =======
 bin
 >>>>>>> 4f7010b (THKX Update)
+=======
+bin/
+>>>>>>> de05106 (THKX Security Update)
 
