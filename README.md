@@ -50,11 +50,4 @@ This repository contains smart contracts and scripts for the **THKX Token Ecosys
 
 ---
 
-## 🌐 Web3 Integration (`web3-thkx-faucets`)
-
-### 📌 Overview
-- This project includes a **frontend integration** for the faucet using **Web3.js**.
-- Allows users to interact with the **Faucet Contract** via a **React-based UI**.
-- Uses **MetaMask** or other Web3 wallets for transactions.
-
 
