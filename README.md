@@ -1,8 +1,10 @@
 # 🚀 THKX Smart Contracts
 
-This repository contains two smart contracts for the **THKX Token Ecosystem**:
-1. **THKX Faucet Contract** - A simple faucet that allows users to claim free THKX tokens.
+This repository contains smart contracts and scripts for the **THKX Token Ecosystem**:
+1. **THKX Faucet Contract** - A faucet that allows users to claim free THKX tokens.
 2. **THKX Token Contract** - An ERC-20 token with staking, minting, burning, and pausing functionalities.
+3. **Web3 Integration (`web3-thkx-faucets`)** - Frontend scripts to interact with the faucet.
+4. **Scripts and Tests** - Deployment, interaction scripts, and smart contract tests.
 
 ---
 
@@ -48,10 +50,11 @@ This repository contains two smart contracts for the **THKX Token Ecosystem**:
 
 ---
 
-## 💡 Notes
-- It's recommended to use **Hardhat / Remix** for deployment and testing.
-- Verify settings before deploying on the mainnet.
-- Ensure admin addresses are secure at all times.
+## 🌐 Web3 Integration (`web3-thkx-faucets`)
 
----
+### 📌 Overview
+- This project includes a **frontend integration** for the faucet using **Web3.js**.
+- Allows users to interact with the **Faucet Contract** via a **React-based UI**.
+- Uses **MetaMask** or other Web3 wallets for transactions.
+
 
