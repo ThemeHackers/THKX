@@ -8,5 +8,9 @@ typechain-types
 #Hardhat files
 cache
 artifacts
+<<<<<<< HEAD
 bin/contracts
+=======
+bin
+>>>>>>> 4f7010b (THKX Update)
 
