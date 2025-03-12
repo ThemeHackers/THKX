@@ -8,7 +8,7 @@ This repository contains smart contracts and scripts for the **THKX Token Ecosys
 
 ---
 
-## 📜 THKX Faucet Contract (`ERC20THKXFaucet.sol`)
+## 📜 THKX Faucet Contract (`erc20-thkx-faucet.sol`)
 
 ### 📌 Features
 - Users can claim free THKX tokens using `claimTokens()`.
@@ -28,7 +28,7 @@ This repository contains smart contracts and scripts for the **THKX Token Ecosys
 
 ---
 
-## 🔥 THKX Token Contract (`THKXToken.sol`)
+## 🔥 THKX Token Contract (`erc20-thkx.sol`)
 
 ### 📌 Features
 - **Standard ERC-20 Token** with burning, pausing, and minting capabilities.
