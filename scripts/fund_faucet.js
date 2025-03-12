@@ -1,23 +1,32 @@
-const { ethers } = require("hardhat");
+const { ethers } = require("ethers");
+require("dotenv").config();
 
-async function main() {
-    const faucetAddress = process.env.faucetAddress;
-    const tokenAddress = process.env.tokenAddress; 
-    const amount = ethers.utils.parseUnits("100000000", 18); 
+const FAUCET_ADDRESS = process.env.faucetAddress; 
+const TOKEN_ADDRESS = process.env.tokenAddress; 
+const AMOUNT = ethers.utils.parseUnits("100000000", 18); 
 
-    const [signer] = await ethers.getSigners();
-    const token = await ethers.getContractAt("IERC20", tokenAddress, signer);
+const provider = new ethers.providers.JsonRpcProvider(process.env.GOOGLE_HOLESKY_ENDPOINT);
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+const tokenContract = new ethers.Contract(TOKEN_ADDRESS, [
+    "function approve(address spender, uint256 amount) public returns (bool)",
+    "function transfer(address recipient, uint256 amount) public returns (bool)"
+], wallet);
 
-    console.log(`Funding Faucet at ${faucetAddress} with ${amount.toString()} THKX...`);
-    const tx = await token.transfer(faucetAddress, amount);
-    await tx.wait();
+async function fundFaucet() {
+    try {
+        console.log(`Approving ${ethers.utils.formatUnits(AMOUNT, 18)} THKX for transfer...`);
+        const approveTx = await tokenContract.approve(FAUCET_ADDRESS, AMOUNT);
+        await approveTx.wait();
+        console.log("Approval successful.");
 
-    console.log("Faucet funded successfully!");
+        console.log(`Funding Faucet with ${ethers.utils.formatUnits(AMOUNT, 18)} THKX...`);
+        const transferTx = await tokenContract.transfer(FAUCET_ADDRESS, AMOUNT);
+        await transferTx.wait();
+
+        console.log("Faucet funded successfully!");
+    } catch (error) {
+        console.error("Error funding faucet:", error);
+    }
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+fundFaucet();

@@ -1,13 +1,10 @@
-const faucetAddress = "0xEedD251d65929D4B277205E041d903D60d376641"; 
-const abi = [
-    "function claimTokens() public",
-    "function cooldownPeriod() public view returns (uint256)",  
-    "function lastClaimTime(address user) public view returns (uint256)" 
-];
+const faucetAddress = "0x108d51488E88D4EBADB35Ee6fF1dAA111746b218";
+const abi = ["function claimTokens() public"];
 
 let signer;
 let provider;
-let cooldownLockedUntil = 0; 
+let lastClaimTime = localStorage.getItem("lastClaimTime") || 0;
+const claimCooldown = 60 * 60; 
 
 async function connectWallet() {
     if (!window.ethereum) {
@@ -17,7 +14,7 @@ async function connectWallet() {
 
     try {
         provider = new ethers.providers.Web3Provider(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" }).catch(actionRejected);  
+        await window.ethereum.request({ method: "eth_requestAccounts" });  
         signer = provider.getSigner();
         const walletAddress = await signer.getAddress();
         const network = await provider.getNetwork();
@@ -27,41 +24,14 @@ async function connectWallet() {
             return;
         }
 
+    
+        localStorage.setItem("walletAddress", walletAddress);
         document.getElementById("walletAddress").innerText = `Connected: ${walletAddress}`;
-        document.getElementById("requestTokens").disabled = false;
-        document.getElementById("claimTokens").disabled = false;  
+        
+        updateButtonStatus();
     } catch (error) {
         document.getElementById("walletAddress").innerText = 
             error.code === 4001 ? "❌ Connection rejected by user." : "❌ Connection failed.";
-    }
-}
-
-function actionRejected(error) {
-    document.getElementById("walletAddress").innerText = "❌ Connection rejected by user.";
-}
-
-async function checkCooldownStatus() {
-    const faucet = new ethers.Contract(faucetAddress, abi, signer);
-    const walletAddress = await signer.getAddress();
-
-    try {
-        const lastClaimTime = await faucet.lastClaimTime(walletAddress);
-        const cooldownPeriod = await faucet.cooldownPeriod();
-        const currentTime = Math.floor(Date.now() / 1000); 
-
-        const timeRemaining = lastClaimTime + cooldownPeriod - currentTime;
-
-        if (timeRemaining > 0) {
-            document.getElementById("walletAddress").innerText = `⏳ Please wait ${timeRemaining} seconds to claim again.`;
-            document.getElementById("claimTokens").disabled = true;
-            document.getElementById("requestTokens").disabled = false;
-        } else {
-            document.getElementById("walletAddress").innerText = "✅ You can claim tokens now!";
-            document.getElementById("claimTokens").disabled = false;
-            document.getElementById("requestTokens").disabled = false;
-        }
-    } catch (error) {
-        console.error(error);
     }
 }
 
@@ -71,59 +41,74 @@ async function claimTokens() {
         return;
     }
 
+    const currentTime = Math.floor(Date.now() / 1000);
+    const nextClaimTime = parseInt(lastClaimTime) + claimCooldown;
+
+    if (currentTime < nextClaimTime) {
+        return;
+    }
+
     try {
-        const currentTime = Math.floor(Date.now() / 1000); 
-
-        if (currentTime < cooldownLockedUntil) {
-            const timeRemaining = cooldownLockedUntil - currentTime;
-            const hours = Math.floor(timeRemaining / 3600);
-            const minutes = Math.floor((timeRemaining % 3600) / 60);
-            document.getElementById("walletAddress").innerText = `⏳ Wait for ${hours} hours ${minutes} minutes before claiming again.`;
-            document.getElementById("claimTokens").disabled = true;
-            return;
-        }
-
         document.getElementById("walletAddress").innerText = "⏳ Claiming tokens...";
         document.getElementById("rainbowLoader").style.display = "block";  
 
         const faucet = new ethers.Contract(faucetAddress, abi, signer);
-
         const tx = await faucet.claimTokens(); 
         await tx.wait();
 
+        lastClaimTime = Math.floor(Date.now() / 1000);
+        localStorage.setItem("lastClaimTime", lastClaimTime);
+
         document.getElementById("walletAddress").innerText = "✅ Tokens claimed!";
-        cooldownLockedUntil = currentTime + 12 * 3600; 
+        updateButtonStatus();
     } catch (error) {
-        if (error.code === 'CALL_EXCEPTION') {
-            const currentTime = Math.floor(Date.now() / 1000); 
-            cooldownLockedUntil = currentTime + 12 * 3600;  
-            const hours = Math.floor(12);
-            const minutes = Math.floor(0);
-            document.getElementById("walletAddress").innerText = `❌ Cooldown active. Please try again in 12 hours (${hours} hours ${minutes} minutes).`;
-            document.getElementById("claimTokens").disabled = true;
-            document.getElementById("requestTokens").disabled = true;
-        } else if (error.code === 'ACTION_REJECTED') {  
-            document.getElementById("walletAddress").innerText = "❌ Action rejected by user.";
-        } else {
-            document.getElementById("walletAddress").innerText = "❌ Transaction failed.";
-        }
+        document.getElementById("walletAddress").innerText = "❌ Transaction failed.";
     } finally {
         document.getElementById("rainbowLoader").style.display = "none"; 
-        document.getElementById("spinner").style.display = "none";  
     }
 }
 
+function updateButtonStatus() {
+    const claimButton = document.getElementById("claimTokens");
+
+    function updateCountdown() {
+        const currentTime = Math.floor(Date.now() / 1000);
+        const nextClaimTime = parseInt(lastClaimTime) + claimCooldown;
+        const timeLeft = nextClaimTime - currentTime;
+
+        if (timeLeft > 0) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            claimButton.disabled = true;
+            claimButton.innerText = `💸 Claim available in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+            claimButton.disabled = false;
+            claimButton.innerText = "💸 Get Tokens Now →";
+            clearInterval(countdownInterval);
+        }
+    }
+
+    updateCountdown();
+    const countdownInterval = setInterval(updateCountdown, 1000);
+}
+
+function restoreWalletConnection() {
+    const savedWallet = localStorage.getItem("walletAddress");
+    if (savedWallet) {
+        document.getElementById("walletAddress").innerText = `🔗 Reconnecting: ${savedWallet}`;
+        connectWallet();
+    }
+}
 
 window.ethereum?.on("accountsChanged", async (accounts) => {
     if (accounts.length > 0) {
-        const walletAddress = accounts[0];
-        document.getElementById("walletAddress").innerText = `Connected: ${walletAddress}`;
-        document.getElementById("claimTokens").disabled = false;
-        document.getElementById("requestTokens").disabled = false;  
+        document.getElementById("walletAddress").innerText = `Connected: ${accounts[0]}`;
+        localStorage.setItem("walletAddress", accounts[0]);
+        updateButtonStatus();
     } else {
         document.getElementById("walletAddress").innerText = "Wallet disconnected";
-        document.getElementById("claimTokens").disabled = true;  
-        document.getElementById("requestTokens").disabled = true;
+        document.getElementById("claimTokens").disabled = true;
+        localStorage.removeItem("walletAddress");
     }
 });
 
@@ -131,7 +116,6 @@ window.ethereum?.on("chainChanged", async (chainId) => {
     if (chainId !== '0x42') { 
         document.getElementById("walletAddress").innerText = "❌ Wrong network. Switch to Holesky Testnet.";
         document.getElementById("claimTokens").disabled = true; 
-        document.getElementById("requestTokens").disabled = true;  
     } else {
         document.getElementById("walletAddress").innerText = "Connected to Holesky Testnet";
     }
@@ -139,4 +123,6 @@ window.ethereum?.on("chainChanged", async (chainId) => {
 
 document.getElementById("connectWallet").addEventListener("click", connectWallet);
 document.getElementById("claimTokens").addEventListener("click", claimTokens);
-document.getElementById("requestTokens").addEventListener("click", claimTokens)
+
+restoreWalletConnection();
+updateButtonStatus();
