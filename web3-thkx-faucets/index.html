@@ -19,9 +19,11 @@
         </a>
         <div>
             <a href="./documentation.html" class="text-secondary me-3" target="_blank">📖 Documentation</a>
+            <a href="./thkx_faucet_staking.html" class="text-secondary me-3" target="_blank">Staking</a>
             <button id="connectWallet" class="btn btn-primary" role="button">🔗 Connect Wallet</button>
             <select id="accountSelect" class="form-select mt-2" style="display:none;"></select>
         </div>
+        
     </nav>
 
     <!-- Hero Section -->
@@ -44,6 +46,8 @@
             <p class="text-muted">🎯 Request tokens from the ERC20 faucet contract.</p>
             <div id="toastContainer"></div>
             <p id="walletAddress" class="text-primary">🔗 Wallet Not Connected</p>
+            <p id="claimMessage" style="display: none; color: rgb(35, 194, 59);"></p>
+            <p id="etherscan" style="display: none; color: rgb(35, 194, 59);"></p>
             <button id="requestTokens" class="btn btn-primary mt-3" disabled role="button">💸 Request Tokens</button>
         </div>
     </div>
