@@ -22,7 +22,7 @@ contract THKXStaking is Ownable, ReentrancyGuard {
     uint256 public totalStaked;
     uint256 public rewardRatePerBlock;
     uint256 public lockPeriod = 7 days;
-    uint256 public earlyWithdrawalFee = 5; // 5%
+    uint256 public earlyWithdrawalFee = 5; 
 
     event Staked(address indexed user, uint256 amount);
     event Unstaked(address indexed user, uint256 amount, uint256 fee);
