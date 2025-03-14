@@ -6,7 +6,7 @@ const FAUCET_ABI = [
     "function claimTokens() external"
 ];
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.GOOGLE_HOLESKY_ENDPOINT);
+const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_HOLESKY_GATEWAY_ENDPOINT);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const faucetContract = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, wallet);
 

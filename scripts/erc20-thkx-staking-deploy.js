@@ -1,29 +1,23 @@
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
+require("dotenv").config();
 
 async function main() {
-    console.log("🚀 Deploying THKX Staking Contract...");
+    const tokenAddress = process.env.tokenAddress; 
+    const rewardRate = ethers.utils.parseUnits("0.002114", "ether"); 
 
-    const THKX_TOKEN = process.env.tokenAddress;
-    const REWARD_RATE = 1000;
+    console.log("Deploying THKXStaking contract...");
 
-    console.log(`🔗 Using THKX Token Address: ${THKX_TOKEN}`);
-    console.log(`💰 Reward Rate per Block: ${REWARD_RATE} THKX`);
+    const THKXStaking = await ethers.getContractFactory("THKXStaking");
+    const stakingContract = await THKXStaking.deploy(tokenAddress, rewardRate);
 
-    const THKXStaking = await hre.ethers.getContractFactory("THKXStaking");
-    const staking = await THKXStaking.deploy(THKX_TOKEN, REWARD_RATE);
+    await stakingContract.deployed();
 
-    console.log("⏳ Waiting for deployment confirmation...");
-    await staking.deployed();
-
-    console.log(`✅ Staking Contract Successfully Deployed!`);
-    console.log(`📍 Contract Address: ${staking.address}`);
-    console.log(`🔍 View on Explorer: https://holesky.etherscan.io/address/${staking.address}`);
-    console.log(`📜 Transaction Hash: ${staking.deployTransaction.hash}`);
-    console.log(`🌐 Network: Holesky Testnet`);
-
+    console.log(`THKXStaking deployed at: ${stakingContract.address}`);
 }
 
-main().catch((error) => {
-    console.error("❌ Deployment Failed:", error);
-    process.exitCode = 1;
-});
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });

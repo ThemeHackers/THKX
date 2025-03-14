@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const FAUCET_ADDRESS = process.env.faucetAddress; 
 const TOKEN_ADDRESS = process.env.tokenAddress; 
-const AMOUNT = ethers.utils.parseUnits("100000000", 18); 
+const AMOUNT = ethers.utils.parseUnits("10000000", 18); 
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.GOOGLE_HOLESKY_ENDPOINT);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
