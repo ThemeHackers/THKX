@@ -41,6 +41,9 @@
   "overrides": {
     "parse-duration": "^2.1.3",
     "lodash": "^4.17.21",
-    "undici": "^6.23.0"
+    "undici": "^6.23.0",
+    "elliptic": "^6.6.1",
+    "tmp": "^0.2.3",
+    "cookie": "^0.7.2"
   }
 }
