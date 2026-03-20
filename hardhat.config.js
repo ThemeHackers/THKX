@@ -1,28 +1,13 @@
 require("@nomicfoundation/hardhat-toolbox");
-require("@nomiclabs/hardhat-ethers");
 require("dotenv").config();
 
+const GOOGLE_SEPOLIA_ENDPOINT = process.env.GOOGLE_SEPOLIA_ENDPOINT;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+
 /** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
+const config = {
   solidity: "0.8.17",
-  networks: {
-    sepolia: {
-      url: process.env.GOOGLE_SEPOLIA_ENDPOINT,
-      accounts: [process.env.PRIVATE_KEY]
-    },
-    goerli: {
-      url: process.env.INFURA_GOERLI_ENDPOINT,
-      accounts: [process.env.PRIVATE_KEY]
-    },
-    holesky: {
-      url: process.env.ETHEREUM_HOLESKY_GATEWAY_ENDPOINT,
-      accounts: [process.env.PRIVATE_KEY]
-    },
-    mainnet: {
-      url: process.env.GOOGLE_MAINNET_ENDPOINT,
-      accounts: [process.env.PRIVATE_KEY]
-    },
-  },
+  networks: {},
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
     customChains: [
@@ -37,3 +22,33 @@ module.exports = {
     ]
   }
 };
+
+if (GOOGLE_SEPOLIA_ENDPOINT && PRIVATE_KEY) {
+  config.networks.sepolia = {
+    url: GOOGLE_SEPOLIA_ENDPOINT,
+    accounts: [PRIVATE_KEY]
+  };
+}
+
+if (process.env.INFURA_GOERLI_ENDPOINT && PRIVATE_KEY) {
+  config.networks.goerli = {
+    url: process.env.INFURA_GOERLI_ENDPOINT,
+    accounts: [PRIVATE_KEY]
+  };
+}
+
+if (process.env.ETHEREUM_HOLESKY_GATEWAY_ENDPOINT && PRIVATE_KEY) {
+  config.networks.holesky = {
+    url: process.env.ETHEREUM_HOLESKY_GATEWAY_ENDPOINT,
+    accounts: [PRIVATE_KEY]
+  };
+}
+
+if (process.env.GOOGLE_MAINNET_ENDPOINT && PRIVATE_KEY) {
+  config.networks.mainnet = {
+    url: process.env.GOOGLE_MAINNET_ENDPOINT,
+    accounts: [PRIVATE_KEY]
+  };
+}
+
+module.exports = config;

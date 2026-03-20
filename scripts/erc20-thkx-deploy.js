@@ -11,8 +11,9 @@ async function main() {
 
   console.log(`[${timestamp}] Deploying contract with deployer as owner...`);
 
-  const gasPrice = await hre.ethers.provider.getGasPrice();
-  console.log(`[${timestamp}] Current gas price: ${hre.ethers.utils.formatUnits(gasPrice, "gwei")} Gwei`);
+  const feeData = await hre.ethers.provider.getFeeData();
+  const gasPrice = feeData.gasPrice;
+  console.log(`[${timestamp}] Current gas price: ${hre.ethers.formatUnits(gasPrice, "gwei")} Gwei`);
 
   console.log(`[${timestamp}] Starting contract deployment...`);
   const thkx = await THKXToken.deploy(deployer.address, {
@@ -20,14 +21,18 @@ async function main() {
   });
 
   console.log(`[${timestamp}] Waiting for the contract to be deployed...`);
-  await thkx.deployed();
+  await thkx.waitForDeployment();
   console.log(`[${timestamp}] Contract successfully deployed!`);
-  console.log(`[${timestamp}] Contract Address: ${thkx.address}`);
-  console.log(`[${timestamp}] Gas used: ${thkx.deployTransaction.gasLimit.toString()}`);
-  console.log(`[${timestamp}] Gas price: ${hre.ethers.utils.formatUnits(thkx.deployTransaction.gasPrice, "gwei")} Gwei`);
+
+  const address = await thkx.getAddress();
+  const deploymentTx = thkx.deploymentTransaction();
+
+  console.log(`[${timestamp}] Contract Address: ${address}`);
+  console.log(`[${timestamp}] Gas limit: ${deploymentTx.gasLimit.toString()}`);
+  console.log(`[${timestamp}] Gas price: ${hre.ethers.formatUnits(deploymentTx.gasPrice, "gwei")} Gwei`);
 
   console.log(`[${timestamp}] Deployment process completed!`);
-  console.log(`[${timestamp}] Contract deploy transaction hash: ${thkx.deployTransaction.hash}`);
+  console.log(`[${timestamp}] Contract deploy transaction hash: ${deploymentTx.hash}`);
 }
 
 main().catch((error) => {
